@@ -1,9 +1,8 @@
-export interface TodoItem {
-  id: string;
-  title: string;
-  description: string;
-  status: "new" | "ongoing" | "done";
-  createdAt: Date;
-  dueDate?: Date;
-  completedAt?: Date;
-}
+export const formatDueDate = (date: Date) => {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+};
