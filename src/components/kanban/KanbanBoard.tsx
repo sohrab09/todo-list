@@ -33,6 +33,8 @@ export default function KanbanBoard() {
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [newTodo, setNewTodo] = useState({ title: "", description: "" });
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState<TodoItem | null>(null);
 
   const addTodo = () => {
     if (newTodo.title.trim() && newTodo.description.trim()) {
@@ -150,6 +152,11 @@ export default function KanbanBoard() {
     }).format(date);
   };
 
+  const handleEditTodo = (todo: TodoItem) => {
+    setSelectedTodo(todo);
+    setEditDialogOpen(true);
+  };
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -238,6 +245,65 @@ export default function KanbanBoard() {
               </div>
             </div>
 
+            {/* Edit Todo */}
+            <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-slate-800">
+                    Edit Task
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 pt-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">
+                      Task Title
+                    </label>
+                    <Input
+                      value={selectedTodo?.title || ""}
+                      onChange={(e) =>
+                        setSelectedTodo((prev) =>
+                          prev ? { ...prev, title: e.target.value } : null
+                        )
+                      }
+                      placeholder="What needs to be done?"
+                      className="h-12 text-lg border-2 focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">
+                      Description
+                    </label>
+                    <Textarea
+                      value={selectedTodo?.description || ""}
+                      onChange={(e) =>
+                        setSelectedTodo((prev) =>
+                          prev ? { ...prev, description: e.target.value } : null
+                        )
+                      }
+                      placeholder="Add more details about this task..."
+                      rows={4}
+                      className="text-base border-2 focus:border-blue-500 resize-none"
+                    />
+                  </div>
+                  <Button
+                    onClick={() => {
+                      if (selectedTodo) {
+                        setTodos((prev) =>
+                          prev.map((todo) =>
+                            todo.id === selectedTodo.id ? selectedTodo : todo
+                          )
+                        );
+                        setEditDialogOpen(false);
+                      }
+                    }}
+                    className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+
             {/* Column Content */}
             <Droppable droppableId={status}>
               {(provided, snapshot) => (
@@ -293,7 +359,10 @@ export default function KanbanBoard() {
                                         >
                                           {statusConfig[todo.status].label}
                                         </Badge>
-                                        <MoreVertical className="h-4 w-4 text-slate-400" />
+                                        <MoreVertical
+                                          className="h-4 w-4 text-slate-400"
+                                          onClick={() => handleEditTodo(todo)}
+                                        />
                                       </div>
                                     </div>
 
