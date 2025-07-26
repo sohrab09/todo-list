@@ -1,5 +1,6 @@
 "use client";
 
+import Footer from "@/components/footer/footer";
 import KanbanBoard from "@/components/kanban/KanbanBoard";
 
 export default function Home() {
@@ -25,6 +26,7 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <KanbanBoard />
       </div>
+      <Footer />
     </div>
   );
 }
